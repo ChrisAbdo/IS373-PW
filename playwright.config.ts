@@ -72,8 +72,10 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: "npm run start",
-    url: "http://127.0.0.1:4000",
+    command: "cd ../IS373-Hexo/blog && npx hexo server",
+    url: "http://localhost:4000",
     reuseExistingServer: !process.env.CI,
+    stdout: "ignore",
+    stderr: "pipe",
   },
 });
