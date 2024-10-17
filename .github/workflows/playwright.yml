@@ -9,16 +9,46 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout Playwright repository
+        uses: actions/checkout@v4
+
+      - name: Checkout Hexo repository
+        uses: actions/checkout@v4
+        with:
+          repository: ChrisAbdo/IS373-Hexo
+          path: IS373-Hexo
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: lts/*
-      - name: Install dependencies
+
+      - name: Install Hexo dependencies
+        run: |
+          cd IS373-Hexo/blog
+          npm ci
+
+      - name: Start Hexo server
+        run: |
+          cd IS373-Hexo/blog
+          npx hexo server &
+          sleep 10  # Give the server time to start
+
+      - name: Install Playwright dependencies
         run: npm ci
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
+
       - name: Run Playwright tests
         run: npx playwright test
+        env:
+          PLAYWRIGHT_TEST_BASE_URL: http://localhost:4000
+
+      - name: Stop Hexo server
+        if: always()
+        run: pkill -f "hexo server"
+
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
