@@ -71,10 +71,10 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: {
-    command: "npx hexo server",
-    url: "http://localhost:4000",
-    reuseExistingServer: !process.env.CI,
-    cwd: process.env.HEXO_BLOG_PATH || "../blog",
-  },
+  // webServer: {
+  //   command: "npx hexo server",
+  //   url: "http://localhost:4000",
+  //   reuseExistingServer: !process.env.CI,
+  //   cwd: process.env.HEXO_BLOG_PATH || "../blog",
+  // },
 });
