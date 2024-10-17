@@ -1,22 +1,29 @@
 import { test, expect } from "@playwright/test";
 
-test("has title", async ({ page }) => {
-  await page.goto("https://chrisabdo.github.io/IS373-Hexo/");
+test("verify recent posts and their page titles", async ({ page }) => {
+  // Navigate to the home page
+  await page.goto("/");
 
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Hexo/);
-});
+  // Locate the recent posts widget
+  const recentPostsWidget = await page.locator('.widget-wrap:has-text("Recent Posts")');
 
-test("get started link", async ({ page }) => {
-  await page.goto("https://chrisabdo.github.io/IS373-Hexo/");
+  // Get all post links within the widget
+  const postLinks = await recentPostsWidget.locator('li a').all();
 
-  // Click the get started link.
-  await page.getByText("October 2024").click();
+  for (const link of postLinks) {
+    const postTitle = await link.textContent();
+    if (postTitle) {
+      // Click the link
+      await link.click();
 
-  // Expects page to have a heading with the name of Installation.
-  await expect(
-    page.getByRole("heading", { name: "Archives: 2024/10 | Hexo" })
-  ).toBeTruthy();
+      // Wait for navigation
+      await page.waitForLoadState('networkidle');
 
-  
+      // Check if the page title contains the post title
+      await expect(page).toHaveTitle(new RegExp(postTitle, 'i'));
+
+      // Go back to the home page for the next iteration
+      await page.goto("/");
+    }
+  }
 });
